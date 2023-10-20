@@ -47,7 +47,7 @@ builder.Services.AddAuthentication(options =>
     })
     .AddIdentityServerAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme, options =>
     {
-        // options.Authority = Configuration.GetValue<string>("ServerUrl");
+        options.Authority = builder.Configuration.GetValue<string>("ServerUrl");
         options.SupportedTokens = SupportedTokens.Jwt;
         options.RequireHttpsMetadata = false;
         options.ApiName = IdentityServerConstants.LocalApi.ScopeName;
@@ -90,13 +90,15 @@ app.UseCors(x => x
     .AllowAnyHeader());
 
 app.UseHttpsRedirection();
+app.UseIdentityServer();
 
-app.UseAuthorization();
 app.UseAuthentication();
-
 app.UseRouting();
-
-app.MapControllers();
+app.UseAuthorization();
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+});
 
 //TODO: Add scheduler
 // app.Services.UseScheduler(scheduler =>

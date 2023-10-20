@@ -23,7 +23,8 @@ public static class IdentityServerExtentions
             .AddInMemoryApiResources(IdentityServerConfiguration.GetApis())
             .AddInMemoryApiScopes(IdentityServerConfiguration.GetApiScopes())
             .AddAspNetIdentity<User>()
-            .AddResourceOwnerValidator<CustomResourceOwnerPasswordValidator>();
+            .AddResourceOwnerValidator<CustomResourceOwnerPasswordValidator>()
+            .AddDeveloperSigningCredential();
 
         return services;
     }
