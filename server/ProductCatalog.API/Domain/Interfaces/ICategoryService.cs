@@ -6,11 +6,11 @@ namespace ProductCatalog.API.Domain.Interfaces;
 
 public interface ICategoryService
 {
-    public Task<List<CategoryResponse>> GetAllCategories();
+    Task<List<CategoryResponse>> GetAllCategories();
 
-    public Task<Category> AddCategory(string categoryName);
+    Task<Category> AddCategory(string categoryName);
 
-    public Task UpdateCategory(Guid categoryId, CategoryRequest productRequest);
+    Task UpdateCategory(Guid categoryId, CategoryRequest productRequest);
 
-    public Task DeleteCategory(Guid productId);
+    Task DeleteCategory(Guid productId);
 }

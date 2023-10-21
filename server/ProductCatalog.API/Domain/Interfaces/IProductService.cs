@@ -5,7 +5,9 @@ namespace ProductCatalog.API.Domain.Interfaces;
 
 public interface IProductService
 {
-    public Task<List<ProductResponse>> GetAllProducts();
+    List<ProductResponse> GetAllProducts();
+
+    List<ProductResponse> GetAllProductsByCategoryName(string categoryName);
 
     Task AddProduct(ProductRequest productRequest);
 

@@ -18,9 +18,18 @@ public class ProductController : BaseController
     [HttpGet]
     [Route("all")]
     // [Authorize(IdentityServerConstants.LocalApi.PolicyName)]
-    public async Task<IActionResult> Get()
+    public IActionResult GetAllProducts()
     {
-        var result = await _productService.GetAllProducts();
+        var result = _productService.GetAllProducts();
+        return Ok(result);
+    }
+
+    [HttpPost]
+    [Route("all-category-name")]
+    // [Authorize(IdentityServerConstants.LocalApi.PolicyName)]
+    public IActionResult GetAllByCategoryName(ProductRequestCategoryName request)
+    {
+        var result = _productService.GetAllProductsByCategoryName(request.CategoryName);
         return Ok(result);
     }
 

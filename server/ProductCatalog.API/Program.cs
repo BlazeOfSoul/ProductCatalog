@@ -27,6 +27,7 @@ builder.Services.AddPersistenceInfrastructure(builder.Configuration);
 builder.Services.AddAutoMapper();
 builder.Services.AddIdentity();
 builder.Services.AddIdentityServerInfrastructure(builder.Configuration);
+builder.Services.AddScheduler();
 
 builder.Services.AddAuthorization(options =>
 {
@@ -97,6 +98,7 @@ app.UseIdentityServer();
 app.UseAuthentication();
 app.UseRouting();
 app.UseAuthorization();
+
 app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
 
 app.Services.UseScheduler(scheduler => { scheduler.Schedule<DollarExchangeRateChecker>().Daily(); });

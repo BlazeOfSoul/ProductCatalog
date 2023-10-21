@@ -23,11 +23,18 @@ public class ProductService : IProductService
         _logger = logger;
     }
 
-    public async Task<List<ProductResponse>> GetAllProducts()
+    public List<ProductResponse> GetAllProducts()
     {
         var products = _repositoryProducts.GetAllQueryable();
-        var productsResponse = products.ProjectTo<ProductResponse>(_mapper.ConfigurationProvider);
-        return new List<ProductResponse>(productsResponse);
+
+        return products.ProjectTo<ProductResponse>(_mapper.ConfigurationProvider).ToList();
+    }
+
+    public List<ProductResponse> GetAllProductsByCategoryName(string categoryName)
+    {
+        var products = _repositoryProducts.GetAllByQueryable(p => p.Category!.Name == categoryName);
+
+        return products.ProjectTo<ProductResponse>(_mapper.ConfigurationProvider).ToList();
     }
 
     public async Task AddProduct(ProductRequest request)
@@ -35,7 +42,7 @@ public class ProductService : IProductService
         var product = _mapper.Map<ProductRequest, Product>(request);
         product.Id = Guid.NewGuid();
 
-        product.Category = await _categoryService.AddCategory(request.CategoryName);
+        product.Category = await _categoryService.AddCategory(request.CategoryName!);
         await _repositoryProducts.CreateAsync(product);
         _logger.LogInformation("Product with id - '{productId}' was added", product.Id);
     }
