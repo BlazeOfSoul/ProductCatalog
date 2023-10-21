@@ -1,3 +1,4 @@
+using Coravel;
 using IdentityModel.AspNetCore.OAuth2Introspection;
 using IdentityServer4;
 using IdentityServer4.AccessTokenValidation;
@@ -5,6 +6,7 @@ using ProductCatalog.API;
 using ProductCatalog.API.Configuration;
 using ProductCatalog.API.Configuration.Identity;
 using ProductCatalog.API.Configuration.IdentityServer;
+using ProductCatalog.API.Invocables;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -95,15 +97,8 @@ app.UseIdentityServer();
 app.UseAuthentication();
 app.UseRouting();
 app.UseAuthorization();
-app.UseEndpoints(endpoints =>
-{
-    endpoints.MapControllers();
-});
+app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
 
-//TODO: Add scheduler
-// app.Services.UseScheduler(scheduler =>
-// {
-//     scheduler.Schedule<XXX>().Daily(); 
-// });
+app.Services.UseScheduler(scheduler => { scheduler.Schedule<DollarExchangeRateChecker>().Daily(); });
 
 app.Run();

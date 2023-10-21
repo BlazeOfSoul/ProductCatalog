@@ -26,5 +26,10 @@ public class ApplicationContext : IdentityDbContext<User>
             .WithOne()
             .HasForeignKey<Product>(p => p.CategoryId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Category>()
+            .HasMany(c => c.Products)
+            .WithOne(p => p.Category)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

@@ -12,8 +12,8 @@ using ProductCatalog.API.Data;
 namespace ProductCatalog.API.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20231020105543_AddProductsAndCategories")]
-    partial class AddProductsAndCategories
+    [Migration("20231021135726_CategoryUpdate")]
+    partial class CategoryUpdate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -160,11 +160,9 @@ namespace ProductCatalog.API.Migrations
 
             modelBuilder.Entity("ProductCatalog.API.Data.Entities.Categories.Category", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -177,14 +175,12 @@ namespace ProductCatalog.API.Migrations
 
             modelBuilder.Entity("ProductCatalog.API.Data.Entities.Products.Product", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("uniqueidentifier");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("CategoryId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
@@ -203,8 +199,7 @@ namespace ProductCatalog.API.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CategoryId")
-                        .IsUnique();
+                    b.HasIndex("CategoryId");
 
                     b.ToTable("Products");
                 });
@@ -328,12 +323,17 @@ namespace ProductCatalog.API.Migrations
             modelBuilder.Entity("ProductCatalog.API.Data.Entities.Products.Product", b =>
                 {
                     b.HasOne("ProductCatalog.API.Data.Entities.Categories.Category", "Category")
-                        .WithOne()
-                        .HasForeignKey("ProductCatalog.API.Data.Entities.Products.Product", "CategoryId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .WithMany("Products")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("ProductCatalog.API.Data.Entities.Categories.Category", b =>
+                {
+                    b.Navigation("Products");
                 });
 #pragma warning restore 612, 618
         }
