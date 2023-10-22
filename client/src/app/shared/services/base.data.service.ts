@@ -24,8 +24,24 @@ export class BaseDataService {
     );
   }
 
-  public sendDeleteRequest<TModel>(
+  public sendPutRequest<TModel>(
     model: TModel,
+    actionRoute: string,
+    headers: HttpHeaders = new HttpHeaders().set('Content-Type', 'application/json'),
+    prefix: boolean = true
+  ): Observable<any> {
+    if (!headers.get('Content-type')) {
+      headers = headers.set('Content-Type', 'application/json');
+    }
+    return this.httpClient.put(
+      environment.serverUrl + (prefix ? this.controllerRoute : '') + actionRoute,
+      model,
+      { headers }
+    );
+  }
+
+  public sendDeleteRequest<TId>(
+    id: TId,
     actionRoute: string,
     headers: HttpHeaders = new HttpHeaders().set('Content-Type', 'application/json'),
     prefix: boolean = true
@@ -36,7 +52,7 @@ export class BaseDataService {
     return this.httpClient.delete(
       `${environment.serverUrl}${
         prefix ? this.controllerRoute : ''
-      }${actionRoute}${this.generateGetRequest(model)}`,
+      }${actionRoute}/${id}`,
       { headers }
     );
   }

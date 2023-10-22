@@ -34,17 +34,17 @@ public class CategoryContoller : BaseController
             return BadRequest();
         }
 
-        await _categoryService.AddCategory(request.Name);
+        await _categoryService.AddCategory(request);
 
         return Ok();
     }
 
     [HttpPut]
-    [Route("update/{categoryId:guid}")]
+    [Route("update")]
     // [Authorize(IdentityServerConstants.LocalApi.PolicyName)]
-    public async Task<IActionResult> UpdateCategory(Guid categoryId, [FromBody] CategoryRequest categoryRequest)
+    public async Task<IActionResult> UpdateCategory([FromBody] CategoryRequest categoryRequest)
     {
-        await _categoryService.UpdateCategory(categoryId, categoryRequest);
+        await _categoryService.UpdateCategory(categoryRequest);
 
         return Ok();
     }

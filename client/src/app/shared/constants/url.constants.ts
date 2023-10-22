@@ -7,12 +7,25 @@ export const actionRoutes = {
 
   authCheckUniqueUserName: 'check-unique-user-name',
   authCheckUniqueEmail: 'check-unique-email',
+
+  addProduct: 'add',
+  getProductsByName: 'all-category-name',
+  getProducts: 'all',
+  updateProducts: 'update',
+  deleteProduct: 'delete',
+
+  addCategory: 'add',
+  getCategories: 'all',
+  updateCategories: 'update',
+  deleteCategory: 'delete',
 };
 
 
 export const controllerRoutes = {
   auth: '/api/auth/',
   user: '/api/user/',
+  product: '/api/product/',
+  category: '/api/category/'
 };
 
 export const authTokenRequestNames = {

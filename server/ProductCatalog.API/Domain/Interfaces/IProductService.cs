@@ -9,9 +9,9 @@ public interface IProductService
 
     List<ProductResponse> GetAllProductsByCategoryName(string categoryName);
 
-    Task AddProduct(ProductRequest productRequest);
+    Task AddProduct(ProductRequest request);
 
-    Task UpdateProduct(Guid productId, ProductRequest productRequest);
+    Task UpdateProduct(ProductRequest request);
 
     Task DeleteProduct(Guid productId);
 }

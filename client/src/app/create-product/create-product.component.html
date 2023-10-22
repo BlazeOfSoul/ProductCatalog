@@ -1,0 +1,62 @@
+<div style="text-align: center;">
+  <mat-card>
+    <mat-card-title class = "my-3">Create a New Product</mat-card-title>
+    <mat-card-content>
+      <form [formGroup]="productForm" (ngSubmit)="onSubmit()">
+
+        <div class="form-field">
+          <mat-form-field>
+            <mat-label>Name</mat-label>
+            <input matInput formControlName="name" placeholder="Enter the product name" required>
+            <mat-error *ngIf="productForm.get('name')?.hasError('required')">Name is required</mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-field">
+          <mat-form-field>
+            <mat-label>Description</mat-label>
+            <input matInput formControlName="description" placeholder="Enter a description">
+            <mat-error *ngIf="productForm.get('description')?.hasError('required')">Description is required</mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-field">
+          <mat-form-field>
+            <mat-label>Price</mat-label>
+            <input matInput formControlName="priceInRubles" type="number" placeholder="Enter the price" required>
+            <mat-error *ngIf="productForm.get('priceInRubles')?.hasError('required')">Price is required</mat-error>
+            <mat-error *ngIf="productForm.get('priceInRubles')?.hasError('min')">Price must be a positive number</mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-field">
+          <mat-form-field>
+            <mat-label>General Note</mat-label>
+            <input matInput formControlName="generalNote" placeholder="Enter a general note">
+            <mat-error *ngIf="productForm.get('generalNote')?.hasError('required')">General Note is required</mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-field">
+          <mat-form-field>
+            <mat-label>Special Note</mat-label>
+            <input matInput formControlName="specialNote" placeholder="Enter a special note">
+            <mat-error *ngIf="productForm.get('specialNote')?.hasError('required')">Special Note is required</mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-field">
+          <mat-form-field>
+            <mat-label>Category</mat-label>
+            <input matInput formControlName="categoryName" placeholder="Enter the category" required>
+            <mat-error *ngIf="productForm.get('categoryName')?.hasError('required')">Category is required</mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-field">
+          <button mat-raised-button color="primary" type="submit" [disabled]="productForm.invalid">Create Product</button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

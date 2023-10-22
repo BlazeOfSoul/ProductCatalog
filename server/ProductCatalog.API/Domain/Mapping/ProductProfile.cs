@@ -9,7 +9,8 @@ public class ProductProfile : Profile
 {
     public ProductProfile()
     {
-        CreateMap<Product, ProductResponse>();
+        CreateMap<Product, ProductResponse>()
+            .ForMember(pr => pr.CategoryName, map => map.MapFrom(p => p.Category.Name));
 
         CreateMap<ProductRequest, Product>()
             .ForMember(p => p.Name, map => map.MapFrom(userInfoResponse => userInfoResponse.Name))

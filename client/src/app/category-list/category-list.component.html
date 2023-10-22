@@ -1,0 +1,33 @@
+<div class="center-input">
+  <mat-form-field appearance="fill">
+    <mat-label>Filter</mat-label>
+    <input matInput (keyup)="applyFilter($event)" placeholder="Search columns" #input>
+  </mat-form-field>
+</div>
+
+<table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+  <ng-container *ngFor="let column of displayedModelColumns" [matColumnDef]="column">
+      <th mat-header-cell *matHeaderCellDef> {{column | titlecase}} </th>
+      <td mat-cell *matCellDef="let category">
+        <div *ngIf="category.editing; else viewModel">
+          <mat-form-field>
+              <input matInput [(ngModel)]="category[column]">
+            </mat-form-field>
+        </div>
+        <ng-template #viewModel>{{category[column]}}</ng-template>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef> Actions </th>
+      <td mat-cell *matCellDef="let category">
+        <button mat-button *ngIf="!category.editing" (click)="startEdit(category)">Edit</button>
+        <button mat-button *ngIf="category.editing" (click)="saveProduct(category)">Save</button>
+        <button mat-button color="warn"(click)="deleteProduct(category)">Delete</button>
+        <button mat-button color="accent"(click)="goToCategory(category)">Go to category</button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+</table>

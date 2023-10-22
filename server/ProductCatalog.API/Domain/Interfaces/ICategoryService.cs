@@ -8,9 +8,9 @@ public interface ICategoryService
 {
     Task<List<CategoryResponse>> GetAllCategories();
 
-    Task<Category> AddCategory(string categoryName);
+    Task<Category> AddCategory(CategoryRequest request);
 
-    Task UpdateCategory(Guid categoryId, CategoryRequest productRequest);
+    Task UpdateCategory(CategoryRequest request);
 
-    Task DeleteCategory(Guid productId);
+    Task DeleteCategory(Guid categoryId);
 }

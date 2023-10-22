@@ -24,19 +24,19 @@ public class ProductController : BaseController
         return Ok(result);
     }
 
-    [HttpPost]
+    [HttpGet]
     [Route("all-category-name")]
     // [Authorize(IdentityServerConstants.LocalApi.PolicyName)]
-    public IActionResult GetAllByCategoryName(ProductRequestCategoryName request)
+    public IActionResult GetAllByCategoryName([FromQuery] string categoryName)
     {
-        var result = _productService.GetAllProductsByCategoryName(request.CategoryName);
+        var result = _productService.GetAllProductsByCategoryName(categoryName);
         return Ok(result);
     }
 
     [HttpPost]
     [Route("add")]
     // [Authorize(IdentityServerConstants.LocalApi.PolicyName)]
-    public async Task<IActionResult> AddProduct(ProductRequest request)
+    public async Task<IActionResult> AddProduct([FromBody] ProductRequest request)
     {
         if (request == null)
         {
@@ -49,11 +49,11 @@ public class ProductController : BaseController
     }
 
     [HttpPut]
-    [Route("update/{productId:guid}")]
+    [Route("update")]
     // [Authorize(IdentityServerConstants.LocalApi.PolicyName)]
-    public async Task<IActionResult> UpdateProduct(Guid productId, [FromBody] ProductRequest productRequest)
+    public async Task<IActionResult> UpdateProduct([FromBody] ProductRequest productRequest)
     {
-        await _productService.UpdateProduct(productId, productRequest);
+        await _productService.UpdateProduct(productRequest);
 
         return Ok();
     }

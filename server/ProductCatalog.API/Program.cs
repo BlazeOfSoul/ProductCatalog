@@ -21,6 +21,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddServices();
 
+builder.Services.AddHttpClient();
 builder.Services.AddRepositoreis();
 builder.Services.AddApplicationLayer();
 builder.Services.AddPersistenceInfrastructure(builder.Configuration);
@@ -28,6 +29,7 @@ builder.Services.AddAutoMapper();
 builder.Services.AddIdentity();
 builder.Services.AddIdentityServerInfrastructure(builder.Configuration);
 builder.Services.AddScheduler();
+
 
 builder.Services.AddAuthorization(options =>
 {
@@ -101,6 +103,9 @@ app.UseAuthorization();
 
 app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
 
-app.Services.UseScheduler(scheduler => { scheduler.Schedule<DollarExchangeRateChecker>().Daily(); });
+app.Services.UseScheduler(scheduler => {
+    scheduler.Schedule<DollarExchangeRateChecker>().Daily().RunOnceAtStart(); 
+});
+
 
 app.Run();

@@ -10,6 +10,6 @@ public static class ServiceExtentions
     {
         services.AddScoped<IProductService, ProductService>();
         services.AddScoped<ICategoryService, CategoryService>();
-        services.AddTransient<DollarExchangeRateChecker>();
+        services.AddSingleton<DollarExchangeRateChecker>();
     }
 }
