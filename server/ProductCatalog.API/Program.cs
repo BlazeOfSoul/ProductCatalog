@@ -1,7 +1,10 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using Coravel;
 using IdentityModel.AspNetCore.OAuth2Introspection;
 using IdentityServer4;
 using IdentityServer4.AccessTokenValidation;
+using Microsoft.AspNetCore.Identity;
 using ProductCatalog.API;
 using ProductCatalog.API.Configuration;
 using ProductCatalog.API.Configuration.Identity;
@@ -20,14 +23,14 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddServices();
-
+builder.Services.AddIdentity();
 builder.Services.AddHttpClient();
 builder.Services.AddRepositoreis();
 builder.Services.AddApplicationLayer();
 builder.Services.AddPersistenceInfrastructure(builder.Configuration);
 builder.Services.AddAutoMapper();
-builder.Services.AddIdentity();
 builder.Services.AddIdentityServerInfrastructure(builder.Configuration);
+
 builder.Services.AddScheduler();
 
 
@@ -36,8 +39,12 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy(IdentityServerConstants.LocalApi.PolicyName, policy =>
     {
         policy.AddAuthenticationSchemes(IdentityServerConstants.LocalApi.AuthenticationScheme)
-            .RequireClaim("scope", "openid");
+            .RequireClaim("scope", "openid", "role");
     });
+
+    options.AddPolicy("Admin", policy => policy.RequireRole("Admin"));
+    options.AddPolicy("Moderator", policy => policy.RequireRole("Moderator"));
+    options.AddPolicy("User", policy => policy.RequireRole("User"));
 });
 
 builder.Services.AddAuthentication(options =>
@@ -55,6 +62,8 @@ builder.Services.AddAuthentication(options =>
         options.Authority = builder.Configuration.GetValue<string>("ServerUrl");
         options.SupportedTokens = SupportedTokens.Jwt;
         options.RequireHttpsMetadata = false;
+        options.RoleClaimType = ClaimTypes.Role;
+        options.NameClaimType = ClaimTypes.Name;
         options.ApiName = IdentityServerConstants.LocalApi.ScopeName;
         options.TokenRetriever = req =>
         {
@@ -89,22 +98,37 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+using (var scope = app.Services.CreateScope())
+{
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    var roles = new[] { "Admin", "Moderator" };
+
+    foreach (var role in roles)
+    {
+        if (!await roleManager.RoleExistsAsync(role))
+        {
+            await roleManager.CreateAsync(new IdentityRole(role));
+        }
+    }
+}
+
 app.UseCors(x => x
     .AllowAnyOrigin()
     .AllowAnyMethod()
     .AllowAnyHeader());
 
 app.UseHttpsRedirection();
+app.UseRouting();
 app.UseIdentityServer();
 
 app.UseAuthentication();
-app.UseRouting();
 app.UseAuthorization();
 
 app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
 
-app.Services.UseScheduler(scheduler => {
-    scheduler.Schedule<DollarExchangeRateChecker>().Daily().RunOnceAtStart(); 
+app.Services.UseScheduler(scheduler =>
+{
+    scheduler.Schedule<DollarExchangeRateChecker>().Daily().RunOnceAtStart();
 });
 
 

@@ -3,6 +3,7 @@ using AutoMapper.QueryableExtensions;
 using ProductCatalog.API.Data.Entities.Products;
 using ProductCatalog.API.Domain.Interfaces;
 using ProductCatalog.API.DTO.Request;
+using ProductCatalog.API.DTO.Request.Product;
 using ProductCatalog.API.DTO.Response;
 using ProductCatalog.API.Invocables;
 
@@ -26,11 +27,23 @@ public class ProductService : IProductService
         _logger = logger;
     }
 
-    public List<ProductResponse> GetAllProducts()
+    public List<ProductResponse> GetAllProductsPartial()
     {
         var products = _repositoryProducts.GetAllQueryable().ProjectTo<ProductResponse>(_mapper.ConfigurationProvider).ToList();
+        products.ForEach(p => p.SpecialNote = null);
+
         ApplyDollarRate(products);
-        _logger.LogInformation("Getted all products");
+        _logger.LogInformation("Getted all products for user");
+
+        return products;
+    }
+
+    public List<ProductResponse> GetAllProductsFull()
+    {
+        var products = _repositoryProducts.GetAllQueryable().ProjectTo<ProductResponse>(_mapper.ConfigurationProvider).ToList();
+
+        ApplyDollarRate(products);
+        _logger.LogInformation("Getted all products for admin or moderator");
 
         return products;
     }
@@ -55,6 +68,16 @@ public class ProductService : IProductService
     }
 
     public async Task UpdateProduct(ProductRequest productRequest)
+    {
+        var existingProduct = await _repositoryProducts.GetByAsync(p => p.Id == productRequest.Id);
+        existingProduct.Category = await _categoryService.AddCategory(new CategoryRequest { Name = productRequest.CategoryName });
+
+        _mapper.Map(productRequest, existingProduct);
+        await _repositoryProducts.UpdateAsync(existingProduct);
+        _logger.LogInformation("Product with id - '{productId}' was updated", existingProduct.Id);
+    }
+
+    public async Task UpdateProductUser(ProductRequestUser productRequest)
     {
         var existingProduct = await _repositoryProducts.GetByAsync(p => p.Id == productRequest.Id);
         existingProduct.Category = await _categoryService.AddCategory(new CategoryRequest { Name = productRequest.CategoryName });

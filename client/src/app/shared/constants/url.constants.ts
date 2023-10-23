@@ -12,6 +12,7 @@ export const actionRoutes = {
   getProductsByName: 'all-category-name',
   getProducts: 'all',
   updateProducts: 'update',
+  updateProductsUser: 'update-user',
   deleteProduct: 'delete',
 
   addCategory: 'add',
@@ -38,5 +39,5 @@ export const authTokenRequestNames = {
 
 export const authTokenRequestValues = {
   password: 'password',
-  scope: 'IdentityServerApi openid',
+  scope: 'IdentityServerApi openid roles',
 };

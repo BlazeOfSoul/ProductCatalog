@@ -17,6 +17,24 @@ export class UserService {
     return userInfo ? JSON.parse(userInfo) : null;
   }
 
+  public hasRoleAdmin(): boolean {
+    const user: User | null = this.getUser();
+    return user?.roles?.includes('Admin') ?? false;
+  }
+
+  public hasRoleModerator(): boolean {
+    const user: User | null = this.getUser();
+    return user?.roles?.includes('Moderator') ?? false;
+  }
+
+  public hasRoleAdminOrModerator(): boolean {
+    return this.hasRoleAdmin() || this.hasRoleModerator();
+  }
+
+  public hasNoRoles(): boolean {
+    return !this.hasRoleAdmin() && !this.hasRoleModerator();
+  }
+
   public getUserFromServer(): Observable<User> {
     return this.userDataService.getUserInfo();
   }

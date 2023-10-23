@@ -20,9 +20,11 @@ public static class IdentityExtention
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromSeconds(900);
                 options.Lockout.MaxFailedAccessAttempts = 20;
             })
+            .AddRoleManager<RoleManager<IdentityRole>>()
             .AddEntityFrameworkStores<ApplicationContext>()
             .AddUserManager<UserManager<User>>()
-            .AddDefaultTokenProviders();
+            .AddDefaultTokenProviders()
+            .AddRoles<IdentityRole>();
 
         return services;
     }

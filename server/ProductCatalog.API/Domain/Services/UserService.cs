@@ -21,7 +21,9 @@ public class UserService : IUserService
     public async Task<ServiceResponse<UserInfoResponse>> GetUserInfo(string userId)
     {
         var user = await _userManager.FindByIdAsync(userId);
+        var roles = await _userManager.GetRolesAsync(user);
         UserInfoResponse userInfo = _mapper.Map<User, UserInfoResponse>(user);
+        userInfo.Roles = roles;
         return new ServiceResponse<UserInfoResponse>(userInfo);
     }
 

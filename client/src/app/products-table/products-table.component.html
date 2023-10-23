@@ -1,5 +1,5 @@
 <table mat-table [dataSource]="products" class="mat-elevation-z8">
-    <ng-container *ngFor="let column of displayedModelColumns" [matColumnDef]="column">
+    <ng-container *ngFor="let column of displayedModelFields" [matColumnDef]="column">
         <th mat-header-cell *matHeaderCellDef> {{column | titlecase}} </th>
         <td mat-cell *matCellDef="let product">
           <div *ngIf="product.editing; else viewModel">
@@ -20,8 +20,9 @@
         <th mat-header-cell *matHeaderCellDef> Actions </th>
         <td mat-cell *matCellDef="let product">
           <button mat-button *ngIf="!product.editing" (click)="startEdit(product)">Edit</button>
-          <button mat-button *ngIf="product.editing" (click)="saveProduct(product)">Save</button>
-          <button mat-button color="warn"(click)="deleteProduct(product)">Delete</button>
+          <button mat-button *ngIf="product.editing && isAdminOrModerator()" (click)="saveProduct(product)">Save</button>
+          <button mat-button *ngIf="product.editing && !isAdminOrModerator()" (click)="saveProductUser(product)">Save</button>
+          <button mat-button *ngIf = "isAdminOrModerator()" color="warn"(click)="deleteProduct(product)">Delete</button>
         </td>
       </ng-container>
 
