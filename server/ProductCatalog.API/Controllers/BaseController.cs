@@ -16,20 +16,14 @@ public class BaseController : ControllerBase
 
     protected IActionResult ResultOf<TModel>(ServiceResponse<TModel> answer)
     {
-        if (answer.Success)
-        {
-            return Ok(answer.ModelRequest);
-        }
+        if (answer.Success) return Ok(answer.ModelRequest);
 
         return BadRequest(answer.Error);
     }
 
     protected IActionResult ResultOf(ServiceResponse answer)
     {
-        if (answer.Success)
-        {
-            return Ok();
-        }
+        if (answer.Success) return Ok();
 
         return BadRequest(answer.Error);
     }

@@ -5,58 +5,57 @@ using ProductCatalog.API.Domain.Interfaces;
 using ProductCatalog.API.DTO.Request;
 using ProductCatalog.API.DTO.Response;
 
-namespace ProductCatalog.API.Domain.Services
+namespace ProductCatalog.API.Domain.Services;
+
+public class CategoryService : ICategoryService
 {
-    public class CategoryService : ICategoryService
+    private readonly ILogger<CategoryService> _logger;
+    private readonly IMapper _mapper;
+    private readonly IRepositoryCategories _repositoryCategories;
+
+    public CategoryService(IRepositoryCategories repositoryCategories, IMapper mapper, ILogger<CategoryService> logger)
     {
-        private readonly IRepositoryCategories _repositoryCategories;
-        private readonly IMapper _mapper;
-        private readonly ILogger<CategoryService> _logger;
+        _repositoryCategories = repositoryCategories;
+        _mapper = mapper;
+        _logger = logger;
+    }
 
-        public CategoryService(IRepositoryCategories repositoryCategories, IMapper mapper, ILogger<CategoryService> logger)
+    public async Task<List<CategoryResponse>> GetAllCategories()
+    {
+        var categories = _repositoryCategories.GetAllQueryable();
+        var categoryResponse = categories.ProjectTo<CategoryResponse>(_mapper.ConfigurationProvider).ToList();
+        _logger.LogInformation("Fetched all categories");
+
+        return categoryResponse;
+    }
+
+    public async Task<Category> AddCategory(CategoryRequest request)
+    {
+        var existingCategory = _repositoryCategories.GetAllByQueryable(c => c.Name == request.Name).FirstOrDefault();
+
+        if (existingCategory == null)
         {
-            _repositoryCategories = repositoryCategories;
-            _mapper = mapper;
-            _logger = logger;
+            var category = new Category { Id = Guid.NewGuid(), Name = request.Name, };
+            _logger.LogInformation("Category with id - '{categoryId}' was added", category.Id);
+            return await _repositoryCategories.CreateAsync(category);
         }
 
-        public async Task<List<CategoryResponse>> GetAllCategories()
-        {
-            var categories = _repositoryCategories.GetAllQueryable();
-            var categoryResponse = categories.ProjectTo<CategoryResponse>(_mapper.ConfigurationProvider).ToList();
-            _logger.LogInformation("Fetched all categories");
+        _logger.LogInformation("Category with id - '{categoryId}' already exists", existingCategory.Id);
+        return existingCategory;
+    }
 
-            return categoryResponse;
-        }
+    public async Task UpdateCategory(CategoryRequest request)
+    {
+        var existingCategory = await _repositoryCategories.GetByAsync(p => p.Id == request.Id);
+        _mapper.Map(request, existingCategory);
+        await _repositoryCategories.UpdateAsync(existingCategory);
+        _logger.LogInformation("Category with id - '{categoryId}' was updated", existingCategory.Id);
+    }
 
-        public async Task<Category> AddCategory(CategoryRequest request)
-        {
-            var existingCategory = _repositoryCategories.GetAllByQueryable(c => c.Name == request.Name).FirstOrDefault();
-
-            if (existingCategory == null)
-            {
-                var category = new Category { Id = Guid.NewGuid(), Name = request.Name };
-                _logger.LogInformation("Category with id - '{categoryId}' was added", category.Id);
-                return await _repositoryCategories.CreateAsync(category);
-            }
-
-            _logger.LogInformation("Category with id - '{categoryId}' already exists", existingCategory.Id);
-            return existingCategory;
-        }
-
-        public async Task UpdateCategory(CategoryRequest request)
-        {
-            var existingCategory = await _repositoryCategories.GetByAsync(p => p.Id == request.Id);
-            _mapper.Map(request, existingCategory);
-            await _repositoryCategories.UpdateAsync(existingCategory);
-            _logger.LogInformation("Category with id - '{categoryId}' was updated", existingCategory.Id);
-        }
-
-        public async Task DeleteCategory(Guid categoryId)
-        {
-            var existingCategory = await _repositoryCategories.GetByAsync(p => p.Id == categoryId);
-            await _repositoryCategories.RemoveAsync(existingCategory);
-            _logger.LogInformation("Category with id - '{categoryId}' was deleted", existingCategory.Id);
-        }
+    public async Task DeleteCategory(Guid categoryId)
+    {
+        var existingCategory = await _repositoryCategories.GetByAsync(p => p.Id == categoryId);
+        await _repositoryCategories.RemoveAsync(existingCategory);
+        _logger.LogInformation("Category with id - '{categoryId}' was deleted", existingCategory.Id);
     }
 }

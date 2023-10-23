@@ -1,4 +1,3 @@
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Coravel;
 using IdentityModel.AspNetCore.OAuth2Introspection;
@@ -15,7 +14,7 @@ using Serilog;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.AddJsonFile("appsettings.json")
-    .AddJsonFile("appsettings.Development.json", optional: true);
+    .AddJsonFile("appsettings.Development.json", true);
 
 builder.Services.AddPersistenceInfrastructure(builder.Configuration);
 
@@ -32,7 +31,6 @@ builder.Services.AddAutoMapper();
 builder.Services.AddIdentityServerInfrastructure(builder.Configuration);
 
 builder.Services.AddScheduler();
-
 
 builder.Services.AddAuthorization(options =>
 {
@@ -101,15 +99,11 @@ if (app.Environment.IsDevelopment())
 using (var scope = app.Services.CreateScope())
 {
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-    var roles = new[] { "Admin", "Moderator" };
+    var roles = new[] { "Admin", "Moderator", };
 
     foreach (var role in roles)
-    {
         if (!await roleManager.RoleExistsAsync(role))
-        {
             await roleManager.CreateAsync(new IdentityRole(role));
-        }
-    }
 }
 
 app.UseCors(x => x
@@ -126,10 +120,6 @@ app.UseAuthorization();
 
 app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
 
-app.Services.UseScheduler(scheduler =>
-{
-    scheduler.Schedule<DollarExchangeRateChecker>().Daily().RunOnceAtStart();
-});
-
+app.Services.UseScheduler(scheduler => { scheduler.Schedule<DollarExchangeRateChecker>().Daily().RunOnceAtStart(); });
 
 app.Run();

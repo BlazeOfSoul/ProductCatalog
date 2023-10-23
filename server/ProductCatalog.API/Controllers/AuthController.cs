@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using ProductCatalog.API.Controllers.Routes;
 using ProductCatalog.API.Domain.Interfaces;
 using ProductCatalog.API.DTO.Request;
 
 namespace ProductCatalog.API.Controllers;
 
-[Route("api/auth/")]
 [ApiController]
 public class AuthController : BaseController
 {
@@ -16,7 +16,7 @@ public class AuthController : BaseController
     }
 
     [HttpPost]
-    [Route("signup")]
+    [Route(AuthRoutes.SignUp)]
     public async Task<IActionResult> SignUp([FromBody] SignUpUserRequest signUpUser)
     {
         var result = await _authService.SignUp(signUpUser);
@@ -24,7 +24,7 @@ public class AuthController : BaseController
     }
 
     [HttpGet]
-    [Route("check-unique-email")]
+    [Route(AuthRoutes.ChechUserEmail)]
     public async Task<IActionResult> CheckUniqueEmail([FromQuery] string email)
     {
         var result = await _authService.CheckUniqueEmail(email);
@@ -32,7 +32,7 @@ public class AuthController : BaseController
     }
 
     [HttpGet]
-    [Route("check-unique-user-name")]
+    [Route(AuthRoutes.ChechUniqueUserName)]
     public async Task<IActionResult> CheckUniqueUserName([FromQuery] string userName)
     {
         var result = await _authService.CheckUniqueUserName(userName);

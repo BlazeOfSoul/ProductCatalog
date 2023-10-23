@@ -1,8 +1,7 @@
 ﻿using IdentityServer4;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-
-using ProductCatalog.API.Controllers.Routes.ProductCatalog.API.Routes;
+using ProductCatalog.API.Controllers.Routes;
 using ProductCatalog.API.Domain.Interfaces;
 using ProductCatalog.API.DTO.Request;
 
@@ -31,10 +30,7 @@ public class CategoryContoller : BaseController
     [Route(CategoryRoutes.AddCategory)]
     public async Task<IActionResult> AddCategory(CategoryRequest request)
     {
-        if (request == null)
-        {
-            return BadRequest();
-        }
+        if (request == null) return BadRequest();
 
         await _categoryService.AddCategory(request);
 

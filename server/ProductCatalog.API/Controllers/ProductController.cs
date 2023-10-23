@@ -1,8 +1,7 @@
-﻿using IdentityServer4;
-
+﻿using System.Security.Claims;
+using IdentityServer4;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-
 using ProductCatalog.API.Controllers.Routes;
 using ProductCatalog.API.Domain.Interfaces;
 using ProductCatalog.API.DTO.Request;
@@ -25,7 +24,8 @@ public class ProductController : BaseController
     [Authorize]
     public IActionResult GetAllProducts()
     {
-        if (((System.Security.Claims.ClaimsIdentity)User.Identity).HasClaim("role", "Admin") || ((System.Security.Claims.ClaimsIdentity)User.Identity).HasClaim("role", "Moderator"))
+        if (((ClaimsIdentity)User.Identity).HasClaim("role", "Admin") ||
+            ((ClaimsIdentity)User.Identity).HasClaim("role", "Moderator"))
         {
             var result = _productService.GetAllProductsFull().Result;
             return Ok(result);
@@ -39,7 +39,8 @@ public class ProductController : BaseController
 
     [HttpGet]
     [Route(ProductRoutes.GetAllByCategoryName)]
-    [Authorize(Roles = "Admin,Moderator", AuthenticationSchemes = IdentityServerConstants.LocalApi.AuthenticationScheme)]
+    [Authorize(Roles = "Admin,Moderator",
+        AuthenticationSchemes = IdentityServerConstants.LocalApi.AuthenticationScheme)]
     public IActionResult GetAllByCategoryName([FromQuery] string categoryName)
     {
         var result = _productService.GetAllProductsByCategoryName(categoryName).Result;
@@ -51,10 +52,7 @@ public class ProductController : BaseController
     [Authorize]
     public async Task<IActionResult> AddProduct([FromBody] ProductRequest request)
     {
-        if (request == null)
-        {
-            return BadRequest();
-        }
+        if (request == null) return BadRequest();
 
         await _productService.AddProduct(request);
 
@@ -63,7 +61,8 @@ public class ProductController : BaseController
 
     [HttpPut]
     [Route(ProductRoutes.UpdateProduct)]
-    [Authorize(Roles = "Admin,Moderator", AuthenticationSchemes = IdentityServerConstants.LocalApi.AuthenticationScheme)]
+    [Authorize(Roles = "Admin,Moderator",
+        AuthenticationSchemes = IdentityServerConstants.LocalApi.AuthenticationScheme)]
     public async Task<IActionResult> UpdateProduct([FromBody] ProductRequest productRequest)
     {
         await _productService.UpdateProduct(productRequest);
@@ -83,7 +82,8 @@ public class ProductController : BaseController
 
     [HttpDelete]
     [Route(ProductRoutes.DeleteProduct)]
-    [Authorize(Roles = "Admin,Moderator", AuthenticationSchemes = IdentityServerConstants.LocalApi.AuthenticationScheme)]
+    [Authorize(Roles = "Admin,Moderator",
+        AuthenticationSchemes = IdentityServerConstants.LocalApi.AuthenticationScheme)]
     public async Task<IActionResult> DeleteProduct(Guid productId)
     {
         await _productService.DeleteProduct(productId);
