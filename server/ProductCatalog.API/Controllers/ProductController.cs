@@ -2,13 +2,14 @@
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+
+using ProductCatalog.API.Controllers.Routes;
 using ProductCatalog.API.Domain.Interfaces;
 using ProductCatalog.API.DTO.Request;
 using ProductCatalog.API.DTO.Request.Product;
 
 namespace ProductCatalog.API.Controllers;
 
-[Route("api/product/")]
 [ApiController]
 public class ProductController : BaseController
 {
@@ -20,33 +21,33 @@ public class ProductController : BaseController
     }
 
     [HttpGet]
-    [Route("all")]
+    [Route(ProductRoutes.GetAllProducts)]
     [Authorize]
     public IActionResult GetAllProducts()
     {
         if (((System.Security.Claims.ClaimsIdentity)User.Identity).HasClaim("role", "Admin") || ((System.Security.Claims.ClaimsIdentity)User.Identity).HasClaim("role", "Moderator"))
         {
-            var result = _productService.GetAllProductsFull();
+            var result = _productService.GetAllProductsFull().Result;
             return Ok(result);
         }
         else
         {
-            var result = _productService.GetAllProductsPartial();
+            var result = _productService.GetAllProductsPartial().Result;
             return Ok(result);
         }
     }
 
     [HttpGet]
-    [Route("all-category-name")]
+    [Route(ProductRoutes.GetAllByCategoryName)]
     [Authorize(Roles = "Admin,Moderator", AuthenticationSchemes = IdentityServerConstants.LocalApi.AuthenticationScheme)]
     public IActionResult GetAllByCategoryName([FromQuery] string categoryName)
     {
-        var result = _productService.GetAllProductsByCategoryName(categoryName);
+        var result = _productService.GetAllProductsByCategoryName(categoryName).Result;
         return Ok(result);
     }
 
     [HttpPost]
-    [Route("add")]
+    [Route(ProductRoutes.AddProduct)]
     [Authorize]
     public async Task<IActionResult> AddProduct([FromBody] ProductRequest request)
     {
@@ -61,7 +62,7 @@ public class ProductController : BaseController
     }
 
     [HttpPut]
-    [Route("update")]
+    [Route(ProductRoutes.UpdateProduct)]
     [Authorize(Roles = "Admin,Moderator", AuthenticationSchemes = IdentityServerConstants.LocalApi.AuthenticationScheme)]
     public async Task<IActionResult> UpdateProduct([FromBody] ProductRequest productRequest)
     {
@@ -71,7 +72,7 @@ public class ProductController : BaseController
     }
 
     [HttpPut]
-    [Route("update-user")]
+    [Route(ProductRoutes.UpdateProductUser)]
     [Authorize]
     public async Task<IActionResult> UpdateProductUser([FromBody] ProductRequestUser productRequest)
     {
@@ -81,7 +82,7 @@ public class ProductController : BaseController
     }
 
     [HttpDelete]
-    [Route("delete/{productId:guid}")]
+    [Route(ProductRoutes.DeleteProduct)]
     [Authorize(Roles = "Admin,Moderator", AuthenticationSchemes = IdentityServerConstants.LocalApi.AuthenticationScheme)]
     public async Task<IActionResult> DeleteProduct(Guid productId)
     {

@@ -11,6 +11,6 @@ public static class RepositoryExtentions
     {
         services.AddScoped<IRepositioryUsers, RepositoryUsers>();
         services.AddScoped<IRepositoryProducts, RepositoryProducts>();
-        services.AddScoped<IRepositoryCategoies, RepositoryCategories>();
+        services.AddScoped<IRepositoryCategories, RepositoryCategories>();
     }
 }

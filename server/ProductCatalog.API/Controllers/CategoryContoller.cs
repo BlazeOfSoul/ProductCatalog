@@ -1,13 +1,13 @@
 ﻿using IdentityServer4;
-
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+
+using ProductCatalog.API.Controllers.Routes.ProductCatalog.API.Routes;
 using ProductCatalog.API.Domain.Interfaces;
 using ProductCatalog.API.DTO.Request;
 
 namespace ProductCatalog.API.Controllers;
 
-[Route("api/category/")]
 [ApiController]
 [Authorize(Roles = "Admin,Moderator", AuthenticationSchemes = IdentityServerConstants.LocalApi.AuthenticationScheme)]
 public class CategoryContoller : BaseController
@@ -20,7 +20,7 @@ public class CategoryContoller : BaseController
     }
 
     [HttpGet]
-    [Route("all")]
+    [Route(CategoryRoutes.GetAllCategories)]
     public async Task<IActionResult> GetAllCategories()
     {
         var result = await _categoryService.GetAllCategories();
@@ -28,7 +28,7 @@ public class CategoryContoller : BaseController
     }
 
     [HttpPost]
-    [Route("add")]
+    [Route(CategoryRoutes.AddCategory)]
     public async Task<IActionResult> AddCategory(CategoryRequest request)
     {
         if (request == null)
@@ -42,7 +42,7 @@ public class CategoryContoller : BaseController
     }
 
     [HttpPut]
-    [Route("update")]
+    [Route(CategoryRoutes.UpdateCategory)]
     public async Task<IActionResult> UpdateCategory([FromBody] CategoryRequest categoryRequest)
     {
         await _categoryService.UpdateCategory(categoryRequest);
@@ -51,7 +51,7 @@ public class CategoryContoller : BaseController
     }
 
     [HttpDelete]
-    [Route("delete/{categoryId:guid}")]
+    [Route(CategoryRoutes.DeleteCategory)]
     public async Task<IActionResult> DeleteProduct(Guid categoryId)
     {
         await _categoryService.DeleteCategory(categoryId);

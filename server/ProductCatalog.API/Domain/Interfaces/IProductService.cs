@@ -6,11 +6,11 @@ namespace ProductCatalog.API.Domain.Interfaces;
 
 public interface IProductService
 {
-    List<ProductResponse> GetAllProductsPartial();
+    Task<List<ProductResponse>> GetAllProductsPartial();
 
-    List<ProductResponse> GetAllProductsFull();
+    Task<List<ProductResponse>> GetAllProductsFull();
 
-    List<ProductResponse> GetAllProductsByCategoryName(string categoryName);
+    Task<List<ProductResponse>> GetAllProductsByCategoryName(string categoryName);
 
     Task AddProduct(ProductRequest request);
 

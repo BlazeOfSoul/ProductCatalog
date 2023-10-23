@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using Microsoft.EntityFrameworkCore;
 using ProductCatalog.API.Data.Entities.Products;
 using ProductCatalog.API.Domain.Interfaces;
 using ProductCatalog.API.DTO.Request;
@@ -7,96 +8,119 @@ using ProductCatalog.API.DTO.Request.Product;
 using ProductCatalog.API.DTO.Response;
 using ProductCatalog.API.Invocables;
 
-namespace ProductCatalog.API.Domain.Services;
-
-public class ProductService : IProductService
+namespace ProductCatalog.API.Domain.Services
 {
-    private readonly IRepositoryProducts _repositoryProducts;
-    private readonly ICategoryService _categoryService;
-    private readonly DollarExchangeRateChecker _dollarExchangeRateChecker;
-    private readonly IMapper _mapper;
-    private readonly ILogger<ProductService> _logger;
-
-    public ProductService(IRepositoryProducts repositoryProducts, ICategoryService categoryService, DollarExchangeRateChecker dollarExchangeRateChecker, IMapper mapper,
-        ILogger<ProductService> logger)
+    public class ProductService : IProductService
     {
-        _repositoryProducts = repositoryProducts;
-        _categoryService = categoryService;
-        _dollarExchangeRateChecker = dollarExchangeRateChecker;
-        _mapper = mapper;
-        _logger = logger;
-    }
+        private readonly IRepositoryProducts _repositoryProducts;
+        private readonly ICategoryService _categoryService;
+        private readonly DollarExchangeRateChecker _dollarExchangeRateChecker;
+        private readonly IMapper _mapper;
+        private readonly ILogger<ProductService> _logger;
 
-    public List<ProductResponse> GetAllProductsPartial()
-    {
-        var products = _repositoryProducts.GetAllQueryable().ProjectTo<ProductResponse>(_mapper.ConfigurationProvider).ToList();
-        products.ForEach(p => p.SpecialNote = null);
+        public ProductService(IRepositoryProducts repositoryProducts, ICategoryService categoryService, DollarExchangeRateChecker dollarExchangeRateChecker, IMapper mapper,
+            ILogger<ProductService> logger)
+        {
+            _repositoryProducts = repositoryProducts;
+            _categoryService = categoryService;
+            _dollarExchangeRateChecker = dollarExchangeRateChecker;
+            _mapper = mapper;
+            _logger = logger;
+        }
 
-        ApplyDollarRate(products);
-        _logger.LogInformation("Getted all products for user");
+        public async Task<List<ProductResponse>> GetAllProductsPartial()
+        {
+            var products = await _repositoryProducts.GetAllQueryable()
+                .ProjectTo<ProductResponse>(_mapper.ConfigurationProvider)
+                .ToListAsync();
 
-        return products;
-    }
+            ApplyDollarRate(products);
+            _logger.LogInformation("Getted all products for user");
 
-    public List<ProductResponse> GetAllProductsFull()
-    {
-        var products = _repositoryProducts.GetAllQueryable().ProjectTo<ProductResponse>(_mapper.ConfigurationProvider).ToList();
+            return products;
+        }
 
-        ApplyDollarRate(products);
-        _logger.LogInformation("Getted all products for admin or moderator");
+        public async Task<List<ProductResponse>> GetAllProductsFull()
+        {
+            var products = await _repositoryProducts.GetAllQueryable()
+                .ProjectTo<ProductResponse>(_mapper.ConfigurationProvider)
+                .ToListAsync();
 
-        return products;
-    }
+            ApplyDollarRate(products);
+            _logger.LogInformation("Getted all products for admin or moderator");
 
-    public List<ProductResponse> GetAllProductsByCategoryName(string categoryName)
-    {
-        var products = _repositoryProducts.GetAllByQueryable(p => p.Category!.Name == categoryName).ProjectTo<ProductResponse>(_mapper.ConfigurationProvider).ToList();
-        ApplyDollarRate(products);
-        _logger.LogInformation("Getted all products with category name - '{name}'", categoryName);
+            return products;
+        }
 
-        return products;
-    }
+        public async Task<List<ProductResponse>> GetAllProductsByCategoryName(string categoryName)
+        {
+            var products = await _repositoryProducts.GetAllByQueryable(p => p.Category!.Name == categoryName)
+                .ProjectTo<ProductResponse>(_mapper.ConfigurationProvider)
+                .ToListAsync();
 
-    public async Task AddProduct(ProductRequest request)
-    {
-        var product = _mapper.Map<ProductRequest, Product>(request);
-        product.Id = Guid.NewGuid();
+            ApplyDollarRate(products);
+            _logger.LogInformation("Getted all products with category name - '{name}'", categoryName);
 
-        product.Category = await _categoryService.AddCategory(new CategoryRequest { Name = request.CategoryName });
-        await _repositoryProducts.CreateAsync(product);
-        _logger.LogInformation("Product with id - '{productId}' was added", product.Id);
-    }
+            return products;
+        }
 
-    public async Task UpdateProduct(ProductRequest productRequest)
-    {
-        var existingProduct = await _repositoryProducts.GetByAsync(p => p.Id == productRequest.Id);
-        existingProduct.Category = await _categoryService.AddCategory(new CategoryRequest { Name = productRequest.CategoryName });
+        public async Task AddProduct(ProductRequest request)
+        {
+            if (request.CategoryName != null)
+            {
+                var product = _mapper.Map<ProductRequest, Product>(request);
+                product.Id = Guid.NewGuid();
 
-        _mapper.Map(productRequest, existingProduct);
-        await _repositoryProducts.UpdateAsync(existingProduct);
-        _logger.LogInformation("Product with id - '{productId}' was updated", existingProduct.Id);
-    }
+                product.Category = await _categoryService.AddCategory(new CategoryRequest { Name = request.CategoryName });
+                await _repositoryProducts.CreateAsync(product);
+                _logger.LogInformation("Product with id - '{productId}' was added", product.Id);
+            }
+            else
+            {
+                _logger.LogError("CategoryName is null in the product request.");
+                throw new ArgumentNullException("CategoryName");
+            }
+        }
 
-    public async Task UpdateProductUser(ProductRequestUser productRequest)
-    {
-        var existingProduct = await _repositoryProducts.GetByAsync(p => p.Id == productRequest.Id);
-        existingProduct.Category = await _categoryService.AddCategory(new CategoryRequest { Name = productRequest.CategoryName });
+        public async Task UpdateProduct(ProductRequest productRequest)
+        {
+            if (productRequest.CategoryName != null)
+            {
+                var existingProduct = await _repositoryProducts.GetByAsync(p => p.Id == productRequest.Id);
+                existingProduct.Category = await _categoryService.AddCategory(new CategoryRequest { Name = productRequest.CategoryName });
 
-        _mapper.Map(productRequest, existingProduct);
-        await _repositoryProducts.UpdateAsync(existingProduct);
-        _logger.LogInformation("Product with id - '{productId}' was updated", existingProduct.Id);
-    }
+                _mapper.Map(productRequest, existingProduct);
+                await _repositoryProducts.UpdateAsync(existingProduct);
+                _logger.LogInformation("Product with id - '{productId}' was updated", existingProduct.Id);
+            }
+            else
+            {
+                _logger.LogError("CategoryName is null in the product request.");
+                throw new ArgumentNullException("CategoryName");
+            }
+        }
 
-    public async Task DeleteProduct(Guid productId)
-    {
-        var existingProduct = await _repositoryProducts.GetByAsync(p => p.Id == productId);
-        await _repositoryProducts.RemoveAsync(existingProduct);
-        _logger.LogInformation("Product with id - '{productId}' was deleted", existingProduct.Id);
-    }
+        public async Task UpdateProductUser(ProductRequestUser productRequest)
+        {
+            var existingProduct = await _repositoryProducts.GetByAsync(p => p.Id == productRequest.Id);
+            existingProduct.Category = await _categoryService.AddCategory(new CategoryRequest { Name = productRequest.CategoryName });
 
-    private void ApplyDollarRate(List<ProductResponse> products)
-    {
-        var dollarRate = _dollarExchangeRateChecker.GetDollarRate();
-        products.ForEach(p => p.PriceInDollars = Math.Round(p.PriceInRubles / dollarRate, 2));
+            _mapper.Map(productRequest, existingProduct);
+            await _repositoryProducts.UpdateAsync(existingProduct);
+            _logger.LogInformation("Product with id - '{productId}' was updated", existingProduct.Id);
+        }
+
+        public async Task DeleteProduct(Guid productId)
+        {
+            var existingProduct = await _repositoryProducts.GetByAsync(p => p.Id == productId);
+            await _repositoryProducts.RemoveAsync(existingProduct);
+            _logger.LogInformation("Product with id - '{productId}' was deleted", existingProduct.Id);
+        }
+
+        private void ApplyDollarRate(List<ProductResponse> products)
+        {
+            var dollarRate = _dollarExchangeRateChecker.GetDollarRate();
+            products.ForEach(p => p.PriceInDollars = Math.Round(p.PriceInRubles / dollarRate, 2));
+        }
     }
 }
