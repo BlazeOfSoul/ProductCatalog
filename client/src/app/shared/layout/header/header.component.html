@@ -4,7 +4,8 @@
   </span>
   <span class="flex-fill"></span>
   <div *ngIf="authService.isAuthorize(); else UnAuthorizeBlock">
-    <button mat-flat-button color="accent" routerLink="/category-list" *ngIf = "showCategoryList()">Category List</button>
+    <button mat-flat-button color="accent" routerLink="/user-list" *ngIf = "showUserList()">User list</button>
+    <button mat-flat-button color="accent" routerLink="/category-list" *ngIf = "showCategoryList()" class = "mx-3">Category List</button>
     <button mat-flat-button color="primary" routerLink="/user/info">
       <mat-icon aria-hidden="false" aria-label="Account">
         account_circle

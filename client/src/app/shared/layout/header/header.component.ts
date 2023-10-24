@@ -24,4 +24,8 @@ export class HeaderComponent implements OnInit {
   public showCategoryList() : boolean {
     return this.userService.hasRoleAdminOrModerator();
   }
+
+  public showUserList() : boolean {
+    return this.userService.hasRoleAdmin();
+  }
 }

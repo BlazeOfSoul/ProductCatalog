@@ -1,6 +1,7 @@
 ﻿using IdentityServer4;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ProductCatalog.API.Controllers.Routes;
 using ProductCatalog.API.Domain.Interfaces;
 using ProductCatalog.API.DTO.Request;
 
@@ -30,6 +31,16 @@ public class UserController : BaseController
     public async Task<IActionResult> Post([FromBody] ChangeUserInfoRequest userInfo)
     {
         var result = await _userService.SetUserInfo(userInfo, LoggedInUserUserId);
+        return ResultOf(result);
+    }
+
+    [HttpGet]
+    [Route(UserRoutes.GetAllUsers)]
+    [Authorize(Roles = "Admin",
+        AuthenticationSchemes = IdentityServerConstants.LocalApi.AuthenticationScheme)]
+    public async Task<IActionResult> GetAllUsers()
+    {
+        var result = await _userService.GetAllUsers();
         return ResultOf(result);
     }
 }

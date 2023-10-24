@@ -4,6 +4,8 @@ export const actionRoutes = {
 
   userInfo: '',
   userChangeInfo: '',
+  getAllUsers: 'all',
+  deleteUser: 'delete',
 
   authCheckUniqueUserName: 'check-unique-user-name',
   authCheckUniqueEmail: 'check-unique-email',

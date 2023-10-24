@@ -9,13 +9,15 @@ namespace ProductCatalog.API.Domain.Services;
 
 public class UserService : IUserService
 {
+    private readonly ILogger<UserService> _logger;
     private readonly IMapper _mapper;
     private readonly UserManager<User> _userManager;
 
-    public UserService(UserManager<User> userManager, IMapper mapper)
+    public UserService(UserManager<User> userManager, IMapper mapper, ILogger<UserService> logger)
     {
         _userManager = userManager;
         _mapper = mapper;
+        _logger = logger;
     }
 
     public async Task<ServiceResponse<UserInfoResponse>> GetUserInfo(string userId)
@@ -39,5 +41,21 @@ public class UserService : IUserService
         }
 
         return new ServiceResponse<UserInfoResponse>(_mapper.Map<User, UserInfoResponse>(user));
+    }
+
+    public async Task<ServiceResponse<List<UserInfoResponse>>> GetAllUsers()
+    {
+        var users = _userManager.Users.ToList();
+        var userInfos = new List<UserInfoResponse>();
+
+        foreach (var user in users)
+        {
+            var roles = await _userManager.GetRolesAsync(user);
+            var userInfo = _mapper.Map<User, UserInfoResponse>(user);
+            userInfo.Roles = roles;
+            userInfos.Add(userInfo);
+        }
+
+        return new ServiceResponse<List<UserInfoResponse>>(userInfos);
     }
 }

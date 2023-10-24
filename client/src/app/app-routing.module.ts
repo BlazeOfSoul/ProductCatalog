@@ -5,6 +5,7 @@ import { HomeComponent } from './home/home.component';
 import { CreateProductComponent } from './create-product/create-product.component';
 import { CategoryListComponent } from './category-list/category-list.component';
 import { CategoryDetailComponent } from './category-detail/category-detail.component';
+import { UserListComponent } from './user-list/user-list.component';
 
 const routes: Routes = [
   {
@@ -23,10 +24,15 @@ const routes: Routes = [
     canActivate: [AuthGuard],
   },
   {
-  path: 'product/all-category-name/:categoryName',
-  component: CategoryDetailComponent,
-  canActivate: [AuthGuard],
+    path: 'product/all-category-name/:categoryName',
+    component: CategoryDetailComponent,
+    canActivate: [AuthGuard],
   },
+  {
+    path: 'user-list',
+    component: UserListComponent,
+    canActivate: [AuthGuard],
+    },
 ];
 
 @NgModule({

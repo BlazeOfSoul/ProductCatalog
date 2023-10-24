@@ -15,6 +15,7 @@ import { CreateProductComponent } from './create-product/create-product.componen
 import { CategoryListComponent } from './category-list/category-list.component';
 import { CategoryDetailComponent } from './category-detail/category-detail.component';
 import { ProductsTableComponent } from './products-table/products-table.component';
+import { UserListComponent } from './user-list/user-list.component';
 
 @NgModule({
   declarations: [
@@ -24,6 +25,7 @@ import { ProductsTableComponent } from './products-table/products-table.componen
     CategoryListComponent,
     CategoryDetailComponent,
     ProductsTableComponent,
+    UserListComponent,
   ],
   imports: [
     HttpClientModule,

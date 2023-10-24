@@ -8,4 +8,6 @@ public interface IUserService
     Task<ServiceResponse<UserInfoResponse>> GetUserInfo(string userId);
 
     Task<ServiceResponse<UserInfoResponse>> SetUserInfo(ChangeUserInfoRequest userInfo, string userId);
+
+    Task<ServiceResponse<List<UserInfoResponse>>> GetAllUsers();
 }

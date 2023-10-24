@@ -1,6 +1,7 @@
 ﻿namespace ProductCatalog.API.Controllers.Routes;
 
-public class UserRoutes
+public static class UserRoutes
 {
-    
+    public const string GetAllUsers = "all";
+    public const string DeleteUser = "delete";
 }
