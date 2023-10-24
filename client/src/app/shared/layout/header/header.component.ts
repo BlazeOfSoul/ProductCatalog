@@ -20,4 +20,12 @@ export class HeaderComponent implements OnInit {
 
   public ngOnInit(): void {
   }
+
+  public showCategoryList() : boolean {
+    return this.userService.hasRoleAdminOrModerator();
+  }
+
+  public showUserList() : boolean {
+    return this.userService.hasRoleAdmin();
+  }
 }

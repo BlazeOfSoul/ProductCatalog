@@ -24,19 +24,19 @@ public class ServiceResponse<TModel>
         Success = answerRequest.Success;
     }
 
-    public ServiceResponse ConvertToServiceRespose()
+    public ServiceResponse ConvertToServiceResponse()
     {
-        ServiceResponse serviceRespose;
+        ServiceResponse serviceResponse;
         if (Success)
         {
-            serviceRespose = new ServiceResponse();
+            serviceResponse = new ServiceResponse();
         }
         else
         {
-            serviceRespose = new ServiceResponse(Error);
+            serviceResponse = new ServiceResponse(Error);
         }
 
-        return serviceRespose;
+        return serviceResponse;
     }
 
     public bool Success { get; private set; }

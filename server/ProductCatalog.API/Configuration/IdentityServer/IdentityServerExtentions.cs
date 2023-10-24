@@ -1,4 +1,6 @@
-﻿using ProductCatalog.API.Data.Entities.Users;
+﻿using IdentityServer4.Services;
+
+using ProductCatalog.API.Data.Entities.Users;
 
 namespace ProductCatalog.API.Configuration.IdentityServer;
 
@@ -23,7 +25,10 @@ public static class IdentityServerExtentions
             .AddInMemoryApiResources(IdentityServerConfiguration.GetApis())
             .AddInMemoryApiScopes(IdentityServerConfiguration.GetApiScopes())
             .AddAspNetIdentity<User>()
-            .AddResourceOwnerValidator<CustomResourceOwnerPasswordValidator>();
+            .AddResourceOwnerValidator<CustomResourceOwnerPasswordValidator>()
+            .AddDeveloperSigningCredential();
+
+        services.AddTransient<IProfileService, ProfileService>();
 
         return services;
     }

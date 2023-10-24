@@ -12,7 +12,7 @@ using ProductCatalog.API.Data;
 namespace ProductCatalog.API.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20231019080122_InitialCreate")]
+    [Migration("20231021102755_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -158,6 +158,53 @@ namespace ProductCatalog.API.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("ProductCatalog.API.Data.Entities.Categories.Category", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Categories");
+                });
+
+            modelBuilder.Entity("ProductCatalog.API.Data.Entities.Products.Product", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CategoryId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("GeneralNote")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("PriceInRubles")
+                        .HasColumnType("float");
+
+                    b.Property<string>("SpecialNote")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId")
+                        .IsUnique();
+
+                    b.ToTable("Products");
+                });
+
             modelBuilder.Entity("ProductCatalog.API.Data.Entities.Users.User", b =>
                 {
                     b.Property<string>("Id")
@@ -272,6 +319,17 @@ namespace ProductCatalog.API.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("ProductCatalog.API.Data.Entities.Products.Product", b =>
+                {
+                    b.HasOne("ProductCatalog.API.Data.Entities.Categories.Category", "Category")
+                        .WithOne()
+                        .HasForeignKey("ProductCatalog.API.Data.Entities.Products.Product", "CategoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Category");
                 });
 #pragma warning restore 612, 618
         }

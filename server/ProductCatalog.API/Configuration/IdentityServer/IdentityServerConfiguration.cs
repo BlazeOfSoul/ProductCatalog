@@ -11,13 +11,14 @@ public static class IdentityServerConfiguration
         {
             Scopes = new[] { IdentityServerConstants.LocalApi.ScopeName }
         },
+        new("roles", "My Roles", new[] { "role" }),
     };
 
     public static IEnumerable<ApiScope> GetApiScopes()
     {
         return new List<ApiScope>
         {
-            new(IdentityServerConstants.LocalApi.ScopeName)
+            new(IdentityServerConstants.LocalApi.ScopeName),
         };
     }
 
@@ -35,6 +36,7 @@ public static class IdentityServerConfiguration
                 IdentityServerConstants.LocalApi.ScopeName,
                 IdentityServerConstants.StandardScopes.OpenId,
                 IdentityServerConstants.StandardScopes.Profile,
+                "roles"
             },
             RefreshTokenExpiration = TokenExpiration.Sliding,
             RefreshTokenUsage = TokenUsage.ReUse,
@@ -52,5 +54,6 @@ public static class IdentityServerConfiguration
         new IdentityResources.OpenId(),
         new IdentityResources.Email(),
         new IdentityResources.Profile(),
+        new IdentityResource("roles", new[] { "role" })
     };
 }

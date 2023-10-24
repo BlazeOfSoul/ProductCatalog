@@ -1,4 +1,5 @@
-﻿using IdentityModel;
+﻿using System.Security.Claims;
+using IdentityModel;
 using Microsoft.AspNetCore.Mvc;
 using ProductCatalog.API.DTO.Response;
 
@@ -10,27 +11,27 @@ public class BaseController : ControllerBase
     {
         get
         {
-            return User.Identity.IsAuthenticated ? User.FindFirst(i => i.Type == JwtClaimTypes.Subject).Value : null;
+            return User.Identity!.IsAuthenticated ? User.FindFirst(i => i.Type == JwtClaimTypes.Subject).Value : null;
         }
     }
 
     protected IActionResult ResultOf<TModel>(ServiceResponse<TModel> answer)
     {
-        if (answer.Success)
-        {
-            return Ok(answer.ModelRequest);
-        }
+        if (answer.Success) return Ok(answer.ModelRequest);
 
         return BadRequest(answer.Error);
     }
 
     protected IActionResult ResultOf(ServiceResponse answer)
     {
-        if (answer.Success)
-        {
-            return Ok();
-        }
+        if (answer.Success) return Ok();
 
         return BadRequest(answer.Error);
+    }
+
+    protected bool IsUserAdminOrModerator()
+    {
+        var claimsIdentity = (ClaimsIdentity)User.Identity!;
+        return claimsIdentity.HasClaim("role", "Admin") || claimsIdentity.HasClaim("role", "Moderator");
     }
 }

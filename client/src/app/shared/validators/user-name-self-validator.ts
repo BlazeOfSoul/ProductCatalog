@@ -16,7 +16,7 @@ export const isUniqueSelfUserName = (
       userName !== changeUserInfo?.userName
     ) {
       authDataService.checkUniqueUserName(userName).subscribe(
-        (answer) => {},
+        () => {},
         (httpErrorResponse) => {
           handleErrors(httpErrorResponse);
         }
