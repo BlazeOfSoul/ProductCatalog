@@ -8,8 +8,8 @@ public class DollarExchangeRateChecker : IInvocable
 {
     private readonly HttpClient _httpClient;
     private readonly ILogger<DollarExchangeRateChecker> _logger;
-    private double _dollarRate;
-    private int _retryIntervalInMinutes = 60;
+    private readonly int _retryIntervalInMinutes = 60;
+    private decimal _dollarRate;
 
     public DollarExchangeRateChecker(IHttpClientFactory httpClientFactory, ILogger<DollarExchangeRateChecker> logger)
     {
@@ -24,17 +24,16 @@ public class DollarExchangeRateChecker : IInvocable
             var response = await _httpClient.GetAsync("https://api.nbrb.by/exrates/rates/431");
 
             if (response.IsSuccessStatusCode)
-            {
-                var content = await response.Content.ReadAsStringAsync();
-                var result = JsonConvert.DeserializeObject<ExchangeRateResponse>(content);
+                _logger.LogWarning("Failed to get the dollar exchange rate. Status code: {statusCode}",
+                    (int)response.StatusCode);
 
-                _dollarRate = (double)result.Cur_OfficialRate;
-                _logger.LogInformation("The current dollar exchange rate is received. Time - '{dateTime}'. Rate - '{rate}'", DateTime.UtcNow, _dollarRate);
-            }
-            else
-            {
-                _logger.LogWarning("Failed to get the dollar exchange rate. Status code: {statusCode}", (int)response.StatusCode);
-            }
+            var content = await response.Content.ReadAsStringAsync();
+            var result = JsonConvert.DeserializeObject<ExchangeRateResponse>(content);
+
+            _dollarRate = result.CurOfficialRate;
+            _logger.LogInformation(
+                "The current dollar exchange rate is received. Time - '{dateTime}'. Rate - '{rate}'",
+                DateTime.UtcNow, _dollarRate);
         }
         catch (HttpRequestException ex)
         {
@@ -49,8 +48,7 @@ public class DollarExchangeRateChecker : IInvocable
         }
     }
 
-
-    public double GetDollarRate()
+    public decimal GetDollarRate()
     {
         return _dollarRate;
     }

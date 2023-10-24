@@ -10,7 +10,7 @@ public class Product
 
     public string? Description { get; set; }
 
-    public double PriceInRubles { get; set; }
+    public decimal PriceInRubles { get; set; }
 
     public string? GeneralNote { get; set; }
 

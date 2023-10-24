@@ -1,22 +1,19 @@
 ﻿using Serilog;
 using Serilog.Events;
 
-namespace ProductCatalog.API;
+namespace ProductCatalog.API.Configuration;
 
 public static class LoggerCreation
 {
     public static void ConfigureLogger()
     {
-        string logFolderPath = Path.Combine(AppContext.BaseDirectory, "logs");
+        var logFolderPath = Path.Combine(AppContext.BaseDirectory, "logs");
 
-        if (!Directory.Exists(logFolderPath))
-        {
-            Directory.CreateDirectory(logFolderPath);
-        }
+        if (!Directory.Exists(logFolderPath)) Directory.CreateDirectory(logFolderPath);
 
         Log.Logger = new LoggerConfiguration()
             .WriteTo.File(
-                path: Path.Combine(logFolderPath, "ProductCatalog-.log"),
+                Path.Combine(logFolderPath, "ProductCatalog-.log"),
                 shared: true,
                 outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] {Message:lj}{NewLine}{Exception}",
                 rollingInterval: RollingInterval.Day,
@@ -25,7 +22,7 @@ public static class LoggerCreation
                 retainedFileCountLimit: null,
                 restrictedToMinimumLevel: LogEventLevel.Information)
             .WriteTo.File(
-                path: Path.Combine(logFolderPath, "ProductCatalog.Errors-.log"),
+                Path.Combine(logFolderPath, "ProductCatalog.Errors-.log"),
                 shared: true,
                 outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] {Message:lj}{NewLine}{Exception}",
                 rollingInterval: RollingInterval.Day,

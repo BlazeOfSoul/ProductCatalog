@@ -3,8 +3,6 @@ using Coravel;
 using IdentityModel.AspNetCore.OAuth2Introspection;
 using IdentityServer4;
 using IdentityServer4.AccessTokenValidation;
-using Microsoft.AspNetCore.Identity;
-using ProductCatalog.API;
 using ProductCatalog.API.Configuration;
 using ProductCatalog.API.Configuration.Identity;
 using ProductCatalog.API.Configuration.IdentityServer;
@@ -96,15 +94,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-using (var scope = app.Services.CreateScope())
-{
-    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-    var roles = new[] { "Admin", "Moderator", };
-
-    foreach (var role in roles)
-        if (!await roleManager.RoleExistsAsync(role))
-            await roleManager.CreateAsync(new IdentityRole(role));
-}
+ScopeCreation.ConfigureScope(app);
 
 app.UseCors(x => x
     .AllowAnyOrigin()

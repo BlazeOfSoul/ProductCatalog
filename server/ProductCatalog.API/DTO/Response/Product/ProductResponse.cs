@@ -8,9 +8,9 @@ public class ProductResponse
 
     public string Description { get; set; }
 
-    public double PriceInRubles { get; set; }
+    public decimal PriceInRubles { get; set; }
 
-    public double PriceInDollars { get; set; }
+    public decimal PriceInDollars { get; set; }
 
     public string GeneralNote { get; set; }
 

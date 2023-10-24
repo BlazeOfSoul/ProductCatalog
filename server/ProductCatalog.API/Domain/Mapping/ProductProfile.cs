@@ -22,10 +22,10 @@ public class ProductProfile : Profile
             .IgnoreAllPropertiesWithAnInaccessibleSetter();
 
         CreateMap<ProductRequestUser, Product>()
-           .ForMember(p => p.Name, map => map.MapFrom(pr => pr.Name))
-           .ForMember(p => p.Description, map => map.MapFrom(pr => pr.Description))
-           .ForMember(p => p.PriceInRubles, map => map.MapFrom(pr => pr.PriceInRubles))
-           .ForMember(p => p.GeneralNote, map => map.MapFrom(pr => pr.GeneralNote))
-           .IgnoreAllPropertiesWithAnInaccessibleSetter();
+            .ForMember(p => p.Name, map => map.MapFrom(pr => pr.Name))
+            .ForMember(p => p.Description, map => map.MapFrom(pr => pr.Description))
+            .ForMember(p => p.PriceInRubles, map => map.MapFrom(pr => pr.PriceInRubles))
+            .ForMember(p => p.GeneralNote, map => map.MapFrom(pr => pr.GeneralNote))
+            .IgnoreAllPropertiesWithAnInaccessibleSetter();
     }
 }

@@ -85,21 +85,19 @@ public class ProductService : IProductService
 
     public async Task UpdateProduct(ProductRequest productRequest)
     {
-        if (productRequest.CategoryName != null)
-        {
-            var existingProduct = await _repositoryProducts.GetByAsync(p => p.Id == productRequest.Id);
-            existingProduct.Category =
-                await _categoryService.AddCategory(new CategoryRequest { Name = productRequest.CategoryName, });
-
-            _mapper.Map(productRequest, existingProduct);
-            await _repositoryProducts.UpdateAsync(existingProduct);
-            _logger.LogInformation("Product with id - '{productId}' was updated", existingProduct.Id);
-        }
-        else
+        if (productRequest.CategoryName == null)
         {
             _logger.LogError("CategoryName is null in the product request.");
             throw new ArgumentNullException("CategoryName");
         }
+
+        var existingProduct = await _repositoryProducts.GetByAsync(p => p.Id == productRequest.Id);
+        existingProduct.Category =
+            await _categoryService.AddCategory(new CategoryRequest { Name = productRequest.CategoryName, });
+
+        _mapper.Map(productRequest, existingProduct);
+        await _repositoryProducts.UpdateAsync(existingProduct);
+        _logger.LogInformation("Product with id - '{productId}' was updated", existingProduct.Id);
     }
 
     public async Task UpdateProductUser(ProductRequestUser productRequest)

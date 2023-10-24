@@ -10,7 +10,7 @@ export const isUniqueEmail = (
     const email = formGroupEmail.value;
     if (!formGroupEmail.pristine && !formGroupEmail.invalid) {
       authDataService.checkUniqueEmail(email).subscribe(
-        (answer) => {},
+        () => {},
         (httpErrorResponse) => {
           handleErrors(httpErrorResponse);
         }

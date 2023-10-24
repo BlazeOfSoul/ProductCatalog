@@ -1,4 +1,4 @@
-export interface ProductModelUserUpdate {
+export interface ProductModelUpdateByUser {
   id: string;
   name: string;
   description: string;

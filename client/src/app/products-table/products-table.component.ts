@@ -2,8 +2,7 @@ import { Component, Input, SimpleChanges } from '@angular/core';
 import { ProductService } from '../shared/services/product.service';
 import { ProductModel } from '../shared/models/product.model';
 import { UserService } from '../shared/services/user.service';
-import { User } from '../shared/models/user.model';
-import { ProductModelUserUpdate } from '../shared/models/product.model.user.update';
+import { ProductModelUpdateByUser } from '../shared/models/product.model.user.update';
 
 @Component({
   selector: 'app-products-table',
@@ -52,12 +51,12 @@ export class ProductsTableComponent {
     this.productService.updateProduct(product).subscribe();
   }
 
-  saveProductUser(product: ProductModelUserUpdate) {
+  saveProductUser(product: ProductModelUpdateByUser) {
     product.editing = undefined;
     this.productService.updateProductUser(product).subscribe();
   }
 
-  showPriceInDollars(product: ProductModel) {
+  showPriceInDollars() {
     this.showDollarPrice = true;
   }
 
@@ -74,5 +73,13 @@ export class ProductsTableComponent {
 
   public isAdminOrModerator() : boolean {
     return this.userService.hasRoleAdminOrModerator();
+  }
+
+  shouldDisplayTooltip(column: string): boolean {
+    return column === 'priceInRubles';
+  }
+
+  getTooltipText(product: any): string {
+    return `${product['priceInDollars']} $`;
   }
 }

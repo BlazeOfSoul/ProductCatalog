@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using Microsoft.EntityFrameworkCore;
 using ProductCatalog.API.Data.Entities.Categories;
 using ProductCatalog.API.Domain.Interfaces;
 using ProductCatalog.API.DTO.Request;
@@ -31,17 +32,23 @@ public class CategoryService : ICategoryService
 
     public async Task<Category> AddCategory(CategoryRequest request)
     {
-        var existingCategory = _repositoryCategories.GetAllByQueryable(c => c.Name == request.Name).FirstOrDefault();
+        if (string.IsNullOrWhiteSpace(request.Name))
+            throw new ArgumentException("Category name is required", nameof(request.Name));
 
-        if (existingCategory == null)
+        var existingCategory = await _repositoryCategories
+            .GetAllByQueryable(c => c.Name == request.Name)
+            .SingleOrDefaultAsync();
+
+        if (existingCategory != null)
         {
-            var category = new Category { Id = Guid.NewGuid(), Name = request.Name, };
-            _logger.LogInformation("Category with id - '{categoryId}' was added", category.Id);
-            return await _repositoryCategories.CreateAsync(category);
+            _logger.LogInformation("Category with id - '{categoryId}' already exists", existingCategory.Id);
+            return existingCategory;
         }
 
-        _logger.LogInformation("Category with id - '{categoryId}' already exists", existingCategory.Id);
-        return existingCategory;
+        var category = new Category { Id = Guid.NewGuid(), Name = request.Name, };
+        var addedCategory = await _repositoryCategories.CreateAsync(category);
+        _logger.LogInformation("Category with id - '{categoryId}' was added", category.Id);
+        return addedCategory;
     }
 
     public async Task UpdateCategory(CategoryRequest request)

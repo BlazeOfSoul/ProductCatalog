@@ -70,7 +70,7 @@ export class AuthService {
     errorHandler: (httpErrorResponse: HttpErrorResponse) => void | undefined
   ): any {
     this.authDataService.signUp(signUpModel).subscribe(
-      (answer) => {
+      () => {
         this.router.navigate(['/']);
       },
       (httpErrorResponse) => {

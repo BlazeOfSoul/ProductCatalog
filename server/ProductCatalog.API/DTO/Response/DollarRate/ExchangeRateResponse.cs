@@ -1,16 +1,18 @@
-﻿namespace ProductCatalog.API.DTO.Response.DollarRate;
+﻿using Newtonsoft.Json;
+
+namespace ProductCatalog.API.DTO.Response.DollarRate;
 
 public class ExchangeRateResponse
 {
-    public int Cur_ID { get; set; }
+    [JsonProperty("Cur_ID")] public int CurID { get; set; }
 
-    public DateTime Date { get; set; }
+    [JsonProperty("Date")] public DateTime Date { get; set; }
 
-    public string Cur_Abbreviation { get; set; }
+    [JsonProperty("Cur_Abbreviation")] public string CurAbbreviation { get; set; }
 
-    public int Cur_Scale { get; set; }
+    [JsonProperty("Cur_Scale")] public int CurScale { get; set; }
 
-    public string Cur_Name { get; set; }
+    [JsonProperty("Cur_Name")] public string CurName { get; set; }
 
-    public decimal Cur_OfficialRate { get; set; }
+    [JsonProperty("Cur_OfficialRate")] public decimal CurOfficialRate { get; set; }
 }

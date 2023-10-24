@@ -1,5 +1,4 @@
-﻿using System.Security.Claims;
-using IdentityServer4;
+﻿using IdentityServer4;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProductCatalog.API.Controllers.Routes;
@@ -24,17 +23,11 @@ public class ProductController : BaseController
     [Authorize]
     public IActionResult GetAllProducts()
     {
-        if (((ClaimsIdentity)User.Identity).HasClaim("role", "Admin") ||
-            ((ClaimsIdentity)User.Identity).HasClaim("role", "Moderator"))
-        {
-            var result = _productService.GetAllProductsFull().Result;
-            return Ok(result);
-        }
-        else
-        {
-            var result = _productService.GetAllProductsPartial().Result;
-            return Ok(result);
-        }
+        var result = IsUserAdminOrModerator()
+            ? _productService.GetAllProductsFull().Result
+            : _productService.GetAllProductsPartial().Result;
+
+        return Ok(result);
     }
 
     [HttpGet]
@@ -73,7 +66,7 @@ public class ProductController : BaseController
     [HttpPut]
     [Route(ProductRoutes.UpdateProductUser)]
     [Authorize]
-    public async Task<IActionResult> UpdateProductUser([FromBody] ProductRequestUser productRequest)
+    public async Task<IActionResult> UpdateProductByUser([FromBody] ProductRequestUser productRequest)
     {
         await _productService.UpdateProductUser(productRequest);
 

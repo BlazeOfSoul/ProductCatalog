@@ -10,7 +10,7 @@ export const isUniqueUserName = (
     const userName = formGroupUserName.value;
     if (!formGroupUserName.pristine && !formGroupUserName.invalid) {
       authDataService.checkUniqueUserName(userName).subscribe(
-        (answer) => {},
+        () => {},
         (httpErrorResponse) => {
           handleErrors(httpErrorResponse);
         }

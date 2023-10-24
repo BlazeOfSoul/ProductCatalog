@@ -26,10 +26,6 @@ export class UserService extends BaseDataService {
     return this.sendGetRequest({}, actionRoutes.getAllUsers);
   }
 
-  public deleteUser(user: User): Observable<any> {
-    return this.sendDeleteRequest(user.userName, actionRoutes.deleteUser);
-  }
-
   public hasRoleAdmin(): boolean {
     const user: User | null = this.getUser();
     return user?.roles?.includes('Admin') ?? false;

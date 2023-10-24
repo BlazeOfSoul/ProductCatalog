@@ -11,7 +11,7 @@ import { ActivatedRoute } from '@angular/router';
 export class CategoryDetailComponent {
   products: ProductModel[] = [];
   displayedModelColumns: string[] = ['name', 'description', 'priceInRubles', 'generalNote', 'specialNote', 'categoryName'];
-  displayedColumns: string[] = ['name', 'description', 'priceInRubles', 'generalNote', 'specialNote', 'categoryName', 'actions'];
+  displayedColumns: string[] = [...this.displayedModelColumns, 'actions'];
 
   constructor(
     private readonly productService: ProductService,
